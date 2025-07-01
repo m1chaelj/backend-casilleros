@@ -27,7 +27,12 @@ router.post('/', verificarToken, requireRole(['coordinador']), async (req, res) 
     );
     // Marca el casillero como no disponible
     await db.query('UPDATE Casillero SET disponible = FALSE WHERE id_casillero = $1', [id_casillero]);
-    res.status(201).json(result.rows[0]);
+    // Devuelve la asignación con datos del casillero
+    const asignacion = result.rows[0];
+    asignacion.id_casillero = id_casillero;
+    asignacion.numero = casillero.rows[0].numero;
+    asignacion.ubicacion = casillero.rows[0].ubicacion;
+    res.status(201).json(asignacion);
   } catch (err) {
     res.status(500).json({ error: 'Error al asignar casillero' });
   }
@@ -55,7 +60,7 @@ router.get('/usuario/:id_usuario', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT a.*, c.numero, c.ubicacion, p.id_solicitud FROM AsignacionCasillero a
+      `SELECT a.*, c.numero, c.ubicacion, a.id_casillero, p.id_solicitud FROM AsignacionCasillero a
        JOIN Pago p ON a.id_pago = p.id_pago
        JOIN Casillero c ON a.id_casillero = c.id_casillero`
     );
