@@ -7,7 +7,16 @@ const db = require('./db');
 const fileUpload = require('express-fileupload');
 
 const app = express();
-app.use(cors());
+
+// Configuración CORS explícita antes de cualquier middleware o ruta
+const allowedOrigins = [
+  'https://frontend-casilleros.netlify.app'
+];
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Rutas principales (se agregarán después)
