@@ -50,6 +50,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ id_usuario: usuario.id_usuario, correo: usuario.correo, rol: usuario.rol }, SECRET, { expiresIn: '8h' });
     res.json({ id_usuario: usuario.id_usuario, correo: usuario.correo, rol: usuario.rol, token });
   } catch (err) {
+    console.error('ERROR en /usuarios/login:', err); 
     res.status(500).json({ error: 'Error al iniciar sesión' });
   }
 });
