@@ -91,4 +91,15 @@ router.get('/solicitud/:id_solicitud', async (req, res) => {
   }
 });
 
+// Obtener TODOS los pagos de una solicitud (para el coordinador y lógica de asignación)
+router.get('/solicitud/:id_solicitud/todos', async (req, res) => {
+  const { id_solicitud } = req.params;
+  try {
+    const result = await db.query('SELECT * FROM Pago WHERE id_solicitud = $1 ORDER BY id_pago DESC', [id_solicitud]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener los pagos' });
+  }
+});
+
 module.exports = router;
