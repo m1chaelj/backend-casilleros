@@ -76,14 +76,18 @@ router.put('/:id_pago/validar', verificarToken, requireRole(['coordinador']), as
   }
 });
 
-// Obtener pagos de una solicitud
+// Obtener el pago más reciente de una solicitud
 router.get('/solicitud/:id_solicitud', async (req, res) => {
   const { id_solicitud } = req.params;
   try {
-    const result = await db.query('SELECT * FROM Pago WHERE id_solicitud = $1', [id_solicitud]);
-    res.json(result.rows);
+    // Solo el pago más reciente (mayor id_pago)
+    const result = await db.query('SELECT * FROM Pago WHERE id_solicitud = $1 ORDER BY id_pago DESC LIMIT 1', [id_solicitud]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No hay pagos para esta solicitud' });
+    }
+    res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: 'Error al obtener pagos' });
+    res.status(500).json({ error: 'Error al obtener el pago' });
   }
 });
 
